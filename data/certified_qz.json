@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "tests_active_qphi": false,
+  "tests_active_angular_model": false,
+  "basis": "aug-cc-pvqz",
+  "note": "Certified helium FCI numbers from IDEA-0116/0118/0119/0121. The manuscript draft still says cc-pVQZ; the frozen calculations used aug-cc-pVQZ. Full AO 1-RDM/2-RDM tensors are not stored here; rerun scripts/run_fci_he.py after IDEA-0123 releases the GPU.",
+  "software": {
+    "pyscf": "2.14.0",
+    "numpy": "2.4.3",
+    "scipy": "1.18.1",
+    "python": "3.12.3",
+    "interpreter": "/home/kai/.venvs/cuda-backends/bin/python"
+  },
+  "sources": {
+    "IDEA-0116": "research/idea0116_he_natural_occupation_gap_gate_2026-09-18",
+    "IDEA-0118": "research/idea0118_he_geminal_occupation_gap_gate_2026-09-18",
+    "IDEA-0119": "research/idea0119_he_leading_geminal_intracule_gate_2026-09-18",
+    "IDEA-0121": "research/idea0121_he_pair_cumulant_intracule_gate_2026-09-18"
+  },
+  "hf_filled_count": {"singlet": 1, "triplet": 2},
+  "singlet": {
+    "n_max": 1.983889430481278,
+    "n_disc": 0.007608570565326827,
+    "epsilon_n": 0.00033159866958143783,
+    "leading_occupations": [
+      1.983889430481278,
+      0.007608570565326827,
+      0.002564295414571628,
+      0.002564295414571623,
+      0.0025642954145716173,
+      0.00011484038831117418
+    ],
+    "lambda_max": 0.9999999999999998,
+    "lambda_disc": 5.296148563436061e-18,
+    "geminal_rank_gt_1e-6": 1,
+    "same_spatial_weight": 0.9960384903761461,
+    "mean_r12_gamma": 1.4237744544548225,
+    "mean_r12_wedge": 1.3675755407111425,
+    "delta_c": -0.05619891374368002,
+    "contact_gamma": 0.12454399973900092,
+    "contact_wedge": 0.1907695973250503,
+    "contact_delta": -0.06622559758604939
+  },
+  "triplet": {
+    "n_max": 0.9996176596902144,
+    "n_disc": 0.00012454467074965718,
+    "epsilon_n": 2.1574437173397696e-05,
+    "leading_occupations": [
+      0.9996176596902144,
+      0.999617659690214,
+      0.00012454467074965718,
+      0.0001245446707495724,
+      0.00012454467074957132,
+      0.00012454467074957077
+    ],
+    "lambda_max": 2.0,
+    "lambda_disc": 9.621023798390982e-16,
+    "geminal_rank_gt_1e-6": 1,
+    "same_spatial_weight": 0.0,
+    "mean_r12_gamma": 4.090048887717378,
+    "mean_r12_wedge": 4.074791393579838,
+    "delta_c": -0.015257494137539851,
+    "contact_gamma": 9.675081954712687e-34,
+    "contact_wedge": 0.0
+  },
+  "exchange_fraction": 1.015355290924064,
+  "mean_r12_vs_basis": {
+    "labels": ["DZ", "TZ", "QZ"],
+    "singlet_gamma": [1.436231816617354, 1.4256827814538162, 1.4237744544548225],
+    "singlet_wedge": [1.3803116878262405, 1.3693813141117392, 1.3675755407111425],
+    "triplet_gamma": [3.5683916886555833, 4.002459359930547, 4.090048887717378],
+    "triplet_wedge": [3.5572361159291566, 3.988806800957157, 4.074791393579838]
+  }
+}

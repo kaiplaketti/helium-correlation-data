@@ -1,0 +1,17 @@
+{
+  "state": "triplet",
+  "basis": "aug-cc-pvqz",
+  "1rdm_leading_occupations": [
+    0.9996176596902144,
+    0.999617659690214,
+    0.00012454467074965718,
+    0.0001245446707495724,
+    0.00012454467074957132,
+    0.00012454467074957077
+  ],
+  "n_disc": 0.00012454467074965718,
+  "2rdm_lambda_max": 2.0,
+  "2rdm_lambda_disc": 9.621023798390982e-16,
+  "mean_r12_gamma": 4.090048887717378,
+  "note": "Full AO tensors are produced only by --run-fci."
+}
