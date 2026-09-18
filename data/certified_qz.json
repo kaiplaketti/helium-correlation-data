@@ -3,7 +3,7 @@
   "tests_active_qphi": false,
   "tests_active_angular_model": false,
   "basis": "aug-cc-pvqz",
-  "note": "Certified helium FCI numbers from IDEA-0116/0118/0119/0121. The manuscript draft still says cc-pVQZ; the frozen calculations used aug-cc-pVQZ. Full AO 1-RDM/2-RDM tensors are not stored here; rerun scripts/run_fci_he.py after IDEA-0123 releases the GPU.",
+  "note": "Certified helium FCI numbers from IDEA-0116/0118/0119/0121. Frozen calculations used aug-cc-pVQZ and PySCF 2.14.0. Archive contents are summary quantities, occupations, geminal values, and intracule curves. Full AO 1-RDM/2-RDM tensors are not in this release.",
   "software": {
     "pyscf": "2.14.0",
     "numpy": "2.4.3",

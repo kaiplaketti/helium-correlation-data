@@ -1,6 +1,8 @@
 # Data and Code Preparation Instructions
 
-**Target AI/Assistant**: Use these instructions to generate the reproducible data and code package for the helium correlation manuscript.
+**Target AI/Assistant**: Use these instructions to generate the reproducible data and code package for the helium data/methods note
+“Reproducible Reduced-Density-Matrix Descriptors for Helium Singlet and Triplet States.”
+Do not restore the discarded title “Certified Electron Correlation in Helium: Exchange Dominates, Coulomb Loosens.”
 
 ---
 
@@ -20,23 +22,33 @@ All files should be organized in a GitHub-ready structure.
 
 ```
 helium-correlation-data/
+├── LICENSE
 ├── README.md
 ├── requirements.txt
 ├── scripts/
 │   ├── run_fci_he.py
 │   ├── analyze_1rdm.py
 │   ├── analyze_2rdm.py
-│   └── plot_intracule.py
+│   ├── plot_intracule.py
+│   └── test_identity.py
 ├── data/
+│   ├── certified_qz.json
+│   ├── intracule_curves.npz
 │   ├── he_singlet_1rdm.json
 │   ├── he_singlet_2rdm.json
 │   ├── he_triplet_1rdm.json
 │   └── he_triplet_2rdm.json
 └── figures/
+    ├── fig1_P_u_singlet_triplet.png
+    ├── fig2_i_u_contact.png
+    ├── fig3_mean_r12_vs_basis.png
     ├── intracule_comparison.png
+    ├── intracule_contact.png
     ├── occupation_numbers.png
     └── r12_convergence.png
 ```
+
+`lithium_fci_gpu_instructions.md` is an IDEA-0123 operator note. It is not part of the helium certificate and must stay out of the Zenodo deposit (`.zenodoignore`).
 
 ---
 
@@ -45,10 +57,12 @@ helium-correlation-data/
 **File**: `scripts/run_fci_he.py`
 
 **Task**: Write a PySCF script that:
-1. Builds helium atom with cc-pVQZ basis;
+1. Builds helium atom with aug-cc-pVQZ basis; remainder from the same aug-cc-pVTZ / aug-cc-pVQZ sequence;
 2. Runs FCI for singlet (\(1^1S\)) and triplet (\(2^3S\));
 3. Exports 1-RDM and 2-RDM to JSON files;
 4. Prints occupation numbers and \(\langle r_{12}\rangle\).
+
+Default export writes certified scalars only. Full AO tensors require `--run-fci` and are refused while IDEA-0123 holds the GPU.
 
 **Key code snippets**:
 ```python
@@ -57,7 +71,7 @@ import numpy as np
 import json
 
 # Build helium
-mol = gto.M(atom='He 0 0 0', basis='cc-pVQZ', verbose=4)
+mol = gto.M(atom='He 0 0 0', basis='aug-cc-pVQZ', verbose=4)
 
 # Hartree-Fock
 mf = scf.RHF(mol).run()
@@ -108,7 +122,7 @@ np.save('../data/he_singlet_natural_occupations.npy', n)
 
 # Print
 print("Natural occupations:", n[:10])
-print("n_disc =", n[2])  # First virtual
+print("n_disc =", n[1])  # singlet: first occupation after HF filling (n[1]; triplet uses n[2])
 ```
 
 **Output**: `natural_occupations.npy` and printed \(n_{\text{disc}}\).
@@ -119,30 +133,19 @@ print("n_disc =", n[2])  # First virtual
 
 **File**: `scripts/analyze_2rdm.py`
 
-**Task**: Diagonalize 2-RDM to get geminal occupation numbers.
+**Task**: Diagonalize the occupied-block 2-RDM to get geminal occupation numbers. The pair matrix is \(G[(p,r),(q,s)]=\mathrm{transpose}(\mathrm{dm2},(0,2,1,3))\), then symmetrized. A naive `reshape(norb**2, norb**2)` without that transpose is the wrong map.
 
 **Key code**:
 ```python
 import numpy as np
 
-# Load 2-RDM (shape: norb×norb×norb×norb)
 dm2 = np.load('../data/he_singlet_2rdm.npy')
-
-# Reshape to matrix (norb² × norb²)
 norb = dm2.shape[0]
-dm2_mat = dm2.reshape(norb**2, norb**2)
+g = np.transpose(np.asarray(dm2, dtype=float), (0, 2, 1, 3)).reshape(norb * norb, norb * norb)
+g = 0.5 * (g + g.T)
+lam = np.linalg.eigvalsh(g)[::-1]
 
-# Diagonalize
-lam, phi = np.linalg.eigh(dm2_mat)
-
-# Sort descending
-idx = np.argsort(lam)[::-1]
-lam = lam[idx]
-
-# Save geminal occupations
 np.save('../data/he_singlet_geminal_occupations.npy', lam)
-
-# Print
 print("Geminal occupations:", lam[:5])
 print("Rank (lam > 1e-6):", np.sum(lam > 1e-6))
 ```
@@ -155,35 +158,11 @@ print("Rank (lam > 1e-6):", np.sum(lam > 1e-6))
 
 **File**: `scripts/plot_intracule.py`
 
-**Task**: Compute and plot \(I(r_{12})\) from the leading geminal.
+**Task**: Plot certified helium intracules from `data/intracule_curves.npz` (IDEA-0121). Do not recompute the quadrature and do not use the GPU. Write both manuscript names (`fig1_…`, `fig2_…`, `fig3_…`) and the script names (`intracule_comparison.png`, `intracule_contact.png`, `r12_convergence.png`).
 
-**Key code**:
-```python
-import numpy as np
-import matplotlib.pyplot as plt
+The live script in this directory is the implementation.
 
-# Load leading geminal (from phi[:, 0] reshaped)
-phi_max = np.load('../data/he_singlet_geminal_phi_max.npy')  # Shape: norb×norb
-
-# Compute intracule on grid
-r_grid = np.linspace(0, 10, 500)
-I_r = []
-
-for r in r_grid:
-    # Integrate |phi_max(r1, r2)|² delta(|r1-r2| - r)
-    # Simplified: use spherical average
-    I_val = compute_intracule_at_r(phi_max, r)  # Implement this
-    I_r.append(I_val)
-
-# Plot
-plt.plot(r_grid, I_r, label='Singlet')
-plt.xlabel(r'$r_{12}$ (bohr)')
-plt.ylabel(r'$I(r_{12})$')
-plt.legend()
-plt.savefig('../figures/intracule_comparison.png')
-```
-
-**Output**: `intracule_comparison.png`.
+**Output**: the seven files listed under `figures/`.
 
 ---
 
@@ -191,64 +170,9 @@ plt.savefig('../figures/intracule_comparison.png')
 
 **File**: `README.md`
 
-**Content**:
-```markdown
-# Helium Correlation Data and Code
+The live `README.md` in this directory is authoritative. Do not regenerate a shorter template that reintroduces cc-pVQZ, PySCF v2.4, Windows default `python`, a different Zenodo DOI, or claims that full AO tensors are stored here.
 
-This repository contains the FCI 1-RDM and 2-RDM data, analysis scripts, and plotting code for the manuscript "Certified Electron Correlation in Helium: Exchange Dominates, Coulomb Loosens."
-
-## Requirements
-
-- Python 3.9+
-- PySCF v2.4
-- NumPy
-- Matplotlib
-
-Install with:
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-1. Run FCI calculations:
-   ```bash
-   cd scripts
-   python run_fci_he.py
-   ```
-
-2. Analyze 1-RDM:
-   ```bash
-   python analyze_1rdm.py
-   ```
-
-3. Analyze 2-RDM:
-   ```bash
-   python analyze_2rdm.py
-   ```
-
-4. Plot intracule:
-   ```bash
-   python plot_intracule.py
-   ```
-
-## Data Files
-
-- `data/he_singlet_1rdm.npy`: Singlet 1-RDM
-- `data/he_singlet_2rdm.npy`: Singlet 2-RDM
-- `data/he_triplet_1rdm.npy`: Triplet 1-RDM
-- `data/he_triplet_2rdm.npy`: Triplet 2-RDM
-
-## Figures
-
-- `figures/intracule_comparison.png`: Intracule for singlet and triplet
-- `figures/occupation_numbers.png`: Natural occupation numbers
-- `figures/r12_convergence.png`: \(\langle r_{12}\rangle\) vs. basis set
-
-## License
-
-MIT License
-```
+Frozen labels: **aug-cc-pVQZ**, **PySCF v2.14.0**, remainder aug-cc-pVTZ/aug-cc-pVQZ. Interpreter: `/home/kai/.venvs/cuda-backends/bin/python`. Identity check: `scripts/test_identity.py`.
 
 ---
 
@@ -258,7 +182,7 @@ MIT License
 
 **Content**:
 ```
-pyscf==2.4.0
+pyscf==2.14.0
 numpy>=1.21.0
 matplotlib>=3.5.0
 scipy>=1.7.0
@@ -268,33 +192,24 @@ scipy>=1.7.0
 
 ## Step 7: GitHub and Zenodo
 
-1. **Create GitHub repository**:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial helium correlation data"
-   git remote add origin https://github.com/yourusername/helium-correlation-data.git
-   git push -u origin main
-   ```
+GitHub remote already exists: https://github.com/kaiplaketti/helium-correlation-data
 
-2. **Archive on Zenodo** (for DOI):
-   - Go to https://zenodo.org
-   - Link GitHub repository
-   - Create new version
-   - Get DOI (e.g., `10.5281/zenodo.XXXXXXX`)
-
-3. **Update manuscript** with:
-   - GitHub link
-   - Zenodo DOI
+1. Commit the working-tree corrections before publishing the Zenodo deposition. The current `HEAD` still has cc-pVQZ / PySCF v2.4 labels.
+2. Keep the reserved draft DOI `10.5281/zenodo.22837641`. A 404 is expected until the deposition is published; do not replace the identifier.
+3. After publication, the same DOI begins to resolve. Do not mint a second helium DOI for this snapshot.
+4. Exclude `lithium_fci_gpu_instructions.md` and `STATUS.md` (see `.zenodoignore`).
 
 ---
 
 ## Notes for the AI
 
-- Use **exact numbers** from the manuscript (e.g., \(n_{\text{disc}} = 0.007609\), \(\langle r_{12}\rangle = 1.424\) bohr);
+- Use **exact numbers** from the manuscript (e.g., \(n_{\text{disc}} = 0.007609\), \(\langle r_{12}\rangle = 1.424\) bohr, gate margins \(n_{\text{disc}}/(2\varepsilon) = 11.47\) and \(2.89\));
+- Frozen software/basis: **PySCF v2.14.0**, **aug-cc-pVQZ**, remainder from aug-cc-pVTZ / aug-cc-pVQZ;
+- \(n_{\text{disc}}\) is the first occupation after HF filling: singlet `n[1]`, triplet `n[2]`;
+- The 2-RDM geminal map is `transpose(dm2, (0,2,1,3))`, not a naive reshape;
+- This snapshot stores certified scalars and intracule curves, not full AO tensors;
 - Ensure **reproducibility** (fixed random seeds, version-locked dependencies);
-- Add **unit tests** if possible (e.g., check trace of 1-RDM = 2);
-- Include **Jupyter notebook** version for interactive exploration (optional).
+- Run `scripts/test_identity.py` (trace/occupation/contact identity on certified arrays).
 
 ---
 

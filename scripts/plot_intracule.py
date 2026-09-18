@@ -48,6 +48,7 @@ def main() -> None:
     ax.set_title("Helium FCI geminal intracule, aug-cc-pVQZ")
     fig.tight_layout()
     fig.savefig(FIG / "intracule_comparison.png", dpi=200)
+    fig.savefig(FIG / "fig1_P_u_singlet_triplet.png", dpi=200)
     plt.close(fig)
 
     mask = u <= 2.0
@@ -63,6 +64,7 @@ def main() -> None:
     ax.set_title("Coalescence: Coulomb hole and Fermi hole")
     fig.tight_layout()
     fig.savefig(FIG / "intracule_contact.png", dpi=200)
+    fig.savefig(FIG / "fig2_i_u_contact.png", dpi=200)
     plt.close(fig)
 
     ns = np.load(DATA / "he_singlet_natural_occupations.npy")
@@ -95,8 +97,10 @@ def main() -> None:
     ax.set_title(r"Helium mean $r_{12}$ vs basis")
     fig.tight_layout()
     fig.savefig(FIG / "r12_convergence.png", dpi=200)
+    fig.savefig(FIG / "fig3_mean_r12_vs_basis.png", dpi=200)
     plt.close(fig)
     print("Wrote", FIG / "intracule_comparison.png")
+    print("Wrote", FIG / "fig1_P_u_singlet_triplet.png")
     print("Wrote", FIG / "occupation_numbers.png")
     print("Wrote", FIG / "r12_convergence.png")
 

@@ -1,11 +1,17 @@
 # Helium correlation local package status
 
-**Local draft. Not submitted.**
+**Local draft. Not a journal submission.** Category: reproducible FCI data/methods note, not a new helium mechanism.
 
-Publication story is IDEA-0116 (1-RDM) + IDEA-0119 (leading-geminal intracule) + IDEA-0121 (pair cumulant). Numbers: singlet ⟨r12⟩=1.424 bohr, triplet 4.090 bohr, f_x=1.015, Coulomb δ_c=−0.056 bohr versus the 1-RDM wedge. This is a quantitative certificate, not new physics.
+Manuscript title: “Reproducible Reduced-Density-Matrix Descriptors for Helium Singlet and Triplet States.”
+There is one manuscript file: `helium_correlation_manuscript.md`. Do not keep a second competing draft.
 
-Scripts and certified arrays live in this directory (`scripts/`, `data/`, `figures/`). Full helium FCI export is deferred until IDEA-0123 releases the GPU.
+Frozen labels: aug-cc-pVQZ, PySCF 2.14.0. Singlet n_disc = n[1], triplet n_disc = n[2]. Residual margins n_disc/(2ε) are 11.47 and 2.89 (documentation checks, not new physics).
 
-Lithium N=3 (IDEA-0123) is an independent ACTIVE GPU thread and must not be mixed into this helium package.
+Numbers: singlet ⟨r12⟩_Γ = 1.424 bohr, triplet 4.090 bohr, δ_c = −0.056 / −0.015 bohr versus γ∧γ. Triplet high-accuracy ⟨r12⟩ is not entered until Yu–Zhou–Qiao (2022) is read from the original tables.
 
-The tin g-factor signed leftover branch closed INCONCLUSIVE on IDEA-0125: leftover 3-loop central is unpublished (0), free 3-loop is already in g_QED, remaining tension ~2.15σ is a documented SM hole, not a 5σ discovery. See `research/idea0125_sn_signed_three_loop_leftover_central_gate_2026-09-18/G_FACTOR_OPEN_QUESTION_FI.md`.
+Archive: summaries, occupations, intracule curves, scripts, figures. Not full AO tensors.
+
+GitHub: https://github.com/kaiplaketti/helium-correlation-data
+Reserved Zenodo draft DOI: 10.5281/zenodo.22837641 (404 until published; expected). Publish Zenodo only from a tagged snapshot of this rewritten note.
+
+`lithium_fci_gpu_instructions.md` is an operator note, excluded from Zenodo. No lithium outlook in the helium manuscript.

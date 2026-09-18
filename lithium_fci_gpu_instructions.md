@@ -2,6 +2,7 @@
 
 EI TESTAA AKTIIVISTA QPHI-MALLIA.
 
+**Not part of the helium certificate or helium Zenodo deposit.**
 This file is the operator note for IDEA-0123. The frozen scientific package is
 
 `research/idea0123_li_n3_pair_cumulant_intracule_gate_2026-09-18`

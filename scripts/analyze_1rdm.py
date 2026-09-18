@@ -3,7 +3,6 @@
 
 n_disc is the first occupation after the HF filled count:
 singlet filled=1 so n_disc = n[1]; triplet filled=2 so n_disc = n[2].
-The instruction-file index n[2] for the singlet is incorrect.
 """
 
 from __future__ import annotations

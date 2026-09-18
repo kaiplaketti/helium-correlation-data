@@ -2,17 +2,18 @@
 
 EI TESTAA AKTIIVISTA QPHI-MALLIA.
 
-Local reproducible package for the draft
-“Certified Electron Correlation in Helium: Exchange Dominates, Coulomb Loosens.”
-It is a quantitative FCI certificate, not a formation law and not new physics.
+Open FCI package for the draft
+“Reproducible Reduced-Density-Matrix Descriptors for Helium Singlet and Triplet States.”
+It is a finite-basis implementation of known helium pair-structure features,
+not a new mechanism and not a Hylleraas/Pekeris-class benchmark.
 
 Certified numbers come from IDEA-0116 (1-RDM), IDEA-0118 (geminals),
 IDEA-0119 (leading-geminal intracule) and IDEA-0121 (pair cumulant).
-The frozen basis is **aug-cc-pVQZ**, PySCF **2.14.0**. The manuscript draft’s
-`cc-pVQZ` / PySCF 2.4 labels are outdated.
+The frozen basis is **aug-cc-pVQZ**, PySCF **2.14.0**. The manuscript
+uses the same labels.
 
-IDEA-0123 (lithium N=3) holds the GPU. This package does **not** rerun helium
-FCI until that reservation is `COMPLETE`.
+Full AO tensors are not in this release. Do not rerun helium FCI while
+another GPU job holds the machine.
 
 ## Requirements
 
@@ -46,7 +47,7 @@ Full AO 1-RDM/2-RDM tensors are written only by:
 IDEA0123_GPU_ACTIVE=0 /home/kai/.venvs/cuda-backends/bin/python scripts/run_fci_he.py --run-fci
 ```
 
-That flag is refused while IDEA-0123 is active.
+That flag is refused while a conflicting GPU/CPU job is active.
 
 ## Certified QZ numbers
 
@@ -60,8 +61,9 @@ That flag is refused while IDEA-0123 is active.
 | \(i_\Gamma(0)\) | 0.1245 | ~0 |
 | geminal rank | 1 | 1 |
 
-Exchange fraction \(f_x=1.015\). Coulomb loosens the singlet versus the 1-RDM
-wedge. The singlet–triplet split is already in that wedge.
+Exchange-containing \(\gamma\wedge\gamma\) already holds most of the reported
+mean-distance difference between \(1\,^1S\) and \(2\,^3S\); \(\delta_c\) is a
+smaller correction on that descriptor.
 
 ## Data files
 
@@ -72,22 +74,36 @@ wedge. The singlet–triplet split is already in that wedge.
 
 ## Figures
 
-- `figures/intracule_comparison.png`
-- `figures/intracule_contact.png`
-- `figures/occupation_numbers.png`
-- `figures/r12_convergence.png`
+Manuscript figures (kept under both names; same plots):
+
+| Manuscript | File | Also written by `plot_intracule.py` |
+|---|---|---|
+| Fig. 1 \(P(u)\) | `figures/fig1_P_u_singlet_triplet.png` | `intracule_comparison.png` |
+| Fig. 2 coalescence | `figures/fig2_i_u_contact.png` | `intracule_contact.png` |
+| Fig. 3 \(\langle r_{12}\rangle\) vs basis | `figures/fig3_mean_r12_vs_basis.png` | `r12_convergence.png` |
+
+`figures/occupation_numbers.png` is an extra natural-occupation bar plot.
 
 ## Analysis notes
 
-- Singlet \(n_{\mathrm{disc}}\) is occupation index **1**, not 2.
+- Singlet \(n_{\mathrm{disc}}\) is occupation index **1**, not 2. Triplet uses index **2**.
 - The 2-RDM geminal map is `transpose(dm2, (0,2,1,3))`, not a naive reshape.
 - Rank-1 2-RDM is an N=2 identity (IDEA-0118), not a correlation failure.
 
+## What is not in this helium deposit
+
+- Full AO 1-RDM/2-RDM tensors (summaries only until `--run-fci` is allowed).
+- `lithium_fci_gpu_instructions.md` is an IDEA-0123 operator note, not helium evidence. Exclude it from Zenodo (see `.zenodoignore`).
+
 ## GitHub / Zenodo
 
-Not published. Do not invent a DOI. Keep this tree local until a remote is
-created on purpose.
+- GitHub: https://github.com/kaiplaketti/helium-correlation-data
+- Reserved Zenodo draft DOI: https://doi.org/10.5281/zenodo.22837641
+- A 404 from `doi.org` is expected until the deposition is published from a
+  tagged snapshot. Do not replace the identifier.
+- Publish Zenodo only after this rewritten data/methods note is the single
+  manuscript in the tagged tree.
 
 ## License
 
-MIT, when published. Until then this is a local research snapshot.
+Scripts: MIT. Data, figures, and documentation: CC BY 4.0 where `LICENSE-DATA` is present. See `LICENSE-CODE` and `LICENSE-DATA` on the published branch.
